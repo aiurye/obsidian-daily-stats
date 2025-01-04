@@ -14,11 +14,11 @@ export default class StatsTrackerView extends ItemView {
 
         this.registerInterval(
             window.setInterval(() => {
-                ReactDOM.render(React.createElement(Calendar, {
+                ReactDOM.render(React.createElement(Heatmap, {
                     data: Object.keys(this.dayCounts).map(day => {
-                        return { "date": new Date(new Date(day).setMonth(new Date(day).getMonth() + 1)), "count": this.dayCounts[day] }
+                        return { "date": new Date(day), "count": this.dayCounts[day] }; // 直接使用 day 字符串创建 Date 对象
                     }),
-                }), (this as any).contentEl);
+                }), this.contentEl);
             }, 1000)
         );
     }
@@ -36,10 +36,23 @@ export default class StatsTrackerView extends ItemView {
     }
 
     async onOpen() {
-        ReactDOM.render(React.createElement(Calendar, {
-            data: Object.keys(this.dayCounts).map(day => {
-                return { "date": new Date(new Date(day).setMonth(new Date(day).getMonth() + 1)), "count": this.dayCounts[day] }
-            }),
-        }), (this as any).contentEl);
+            return __awaiter(this, void 0, void 0, function* () {
+                ReactDOM.render(React.createElement(Heatmap, {
+                    data: Object.keys(this.dayCounts).map(day => {
+                        return { "date": new Date(day), "count": this.dayCounts[day] }; // 正确的日期转换
+                    }),
+                    horizontal: false,
+                    showMonthLabels: true,
+                    showWeekdayLabels: true,
+                    weekdayLabels: ["S", "M", "T", "W", "T", "F", "S"],
+                    classForValue: (value) => {
+                        if (!value || value.count == 0) {
+                            return 'color-empty';
+                        }
+                        return `color${getColorLevel(value.count)}`;
+                    },
+                    titleForValue: (value) => !value || value.date === null ? '' : value.count + ' words on ' + new Date(value.date).toLocaleDateString() // 正确显示日期
+                }), this.contentEl);
+            });
     }
 }

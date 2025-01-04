@@ -137,7 +137,10 @@ export default class DailyStats extends Plugin {
 
 	updateDate() {
 		const d = new Date();
-		this.today = d.getFullYear() + "/" + d.getMonth() + "/" + d.getDate();
+		const year = d.getFullYear();
+		const month = String(d.getMonth() + 1).padStart(2, '0'); // 月份加 1 并补零
+		const day = String(d.getDate()).padStart(2, '0');       // 日期补零
+		this.today = `${year}/${month}/${day}`;
 	}
 
 	updateCounts() {
